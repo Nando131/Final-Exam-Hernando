@@ -18,8 +18,13 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <StyledComponentsRegistry>
           <GlobalProvider>
-            <ConfigProvider theme={{ token: { colorPrimary: '#1677ff' } }}>
-              <App style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+            <ConfigProvider 
+              theme={{ token: { colorPrimary: '#1677ff' } }}
+            >
+              <App 
+                style={{ minHeight: '100vh', background: '#f0f2f5' }}
+                message={{ duration: 2, maxCount: 3 }} // Config notif global
+              >
                 <Navbar />
                 <main style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
                   {children}

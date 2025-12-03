@@ -19,17 +19,25 @@ const ProductModalContent = ({ isOpen, onClose, refreshData, editingProduct }) =
         }
     }, [isOpen, editingProduct, form]);
 
-const handleOk = async () => {
+    const handleOk = async () => {
         try {
             const values = await form.validateFields();
             let result;
 
+            // ✅ PERBAIKAN: Deklarasikan payload dan inisialisasi dengan values
+            // Ini mengatasi ReferenceError: payload is not defined
+            let payload = values;
+
             if (isEdit) {
+                // Di mode EDIT, payload sama dengan values yang divalidasi.
+                // Kita mengirimkannya bersama ID dari produk yang sedang diedit.
                 result = await api.updateProduct(editingProduct.id, payload);
             } else {
-                result = await api.createProduct(values);
+                // Di mode CREATE, kita mengirimkan payload (values)
+                result = await api.createProduct(payload);
             }
             
+            // Logika penanganan hasil operasi API
             if (result !== false) {
                 message.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
                 refreshData();
@@ -39,10 +47,10 @@ const handleOk = async () => {
                 message.error('Operation failed: API request denied or failed.');
             }
 
-        } catch (error) {
-            console.error("Form validation failed:", error); 
+        } catch (error) {            
             message.error('Please check your form inputs.');
         }
+
     };
 
     return (
@@ -60,7 +68,13 @@ const handleOk = async () => {
                     <Input.TextArea rows={3} />
                 </Form.Item>
                 <Form.Item name="price" label="Price" rules={[{ required: true, message: 'Please input price' }]}>
-                    <InputNumber style={{ width: '100%' }} prefix="Rp" formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
+                    <InputNumber 
+                        style={{ width: '100%' }} 
+                        prefix="Rp" 
+                        // Menggunakan parser dan formatter yang benar untuk Price
+                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} 
+                        parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                    />
                 </Form.Item>
                 <Form.Item name="stock" label="Stock" rules={[{ required: true, message: 'Please input stock' }]}>
                     <InputNumber style={{ width: '100%' }} />
@@ -75,6 +89,7 @@ const handleOk = async () => {
         </Modal>
     );
 };
+
 const ProductModal = (props) => (
     <App>
         <ProductModalContent {...props} />

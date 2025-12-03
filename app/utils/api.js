@@ -1,13 +1,7 @@
 import axios from 'axios';
 import { unstable_noStore as noStore } from 'next/cache'; 
 
-const BASE_URL_SERVER = process.env.NEXT_PUBLIC_API_BASE_URL || ''; 
-const BASE_URL_PATH = '/api/products'; 
-
-const API_BASE_URL = typeof window === 'undefined' 
-    ? `${BASE_URL_SERVER}${BASE_URL_PATH}`
-    : BASE_URL_PATH;
-
+const API_BASE_URL = '/api/products';
 
 export async function getAllProducts() {
   try {
